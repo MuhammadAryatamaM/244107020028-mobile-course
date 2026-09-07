@@ -17,6 +17,22 @@ Karena akan jelas perubahan tertentu itu memengaruhi file yang mana, memudahkan 
 
 # Week 2:  Declarative UI & Responsive Design
 
+## Apa perbedaan cara berpikir imperative dan declarative saat membangun UI?
+
+Imperative fokus pada langkah-langkah bagaimana memanipulasi UI secara manual, mencari elemennya lalu memberikan perintah satu per satu untuk mengubah warna atau teksnya setiap kali terjadi aksi. Declarative fokus mendeskripsikan seperti apa bentuk UI berdasarkan kondisi state saat ini, cukup memperbarui variabel datanya saja, dan framework menggambar ulang seluruh tampilan agar sesuai dengan kondisi data yang baru. 
+
+## Kapan Expanded membantu dan kapan penggunaannya justru menghasilkan layout error?
+
+Expanded membantu saat butuh responsitivas (most of the time berhasil), tapi kadang bisa overflow jika elemen expandednya ke kanan tapi elemennya punya fixed height, membuatnya tidak bisa kemana-mana. Expanded juga bisa menghasilkan error jika ditaruh di elemen yang size nya tak hingga karena Expanded mengambil sisa ruang yang ada
+
+## Bagaimana breakpoint dan theme memengaruhi pengalaman pengguna?
+
+Breakpoint mengatur kapan suatu elemen bisa berubah layoutnya bergantung pada ukuran atau orientasi layar, misal jika layar lebar bisa muat 2 kolom, maka layar sempit tidak bisa dipaksa untuk muat 2 kolom, lebih baik 1 kolom. Theme juga berpengaruh ke preferensi user nyamannya bagaimana (light/dark) dan overall design UI juga
+
+## Apa yang Anda verifikasi dari rekomendasi AI setelah tugas inti selesai?
+
+Semua fitur berjalan dengan normal, tidak ada yang error, dan yang ditanyakan terjawab dengan baik seperti aksesibilitasnya, responsivitas, layout, dll
+
 # Week 3: Navigation & State Management
 
 # Week 4: Networking & REST API

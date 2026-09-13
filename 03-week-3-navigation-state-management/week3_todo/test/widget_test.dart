@@ -13,7 +13,7 @@ void main() {
 
     await tester.enterText(find.byType(TextField), 'Kerjakan PR minggu 3');
     await tester.tap(find.text('Tambah'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Kerjakan PR minggu 3'), findsOneWidget);
   });

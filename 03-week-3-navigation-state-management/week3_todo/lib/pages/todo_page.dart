@@ -8,7 +8,7 @@ class TodoPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final todos = ref.watch(todoListProvider);
+    final todos = ref.watch(uncompletedListProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('ToDo Riverpod')),
@@ -64,7 +64,10 @@ class TodoTile extends ConsumerWidget {
     return ListTile(
       leading: Checkbox(
         value: todo.done,
-        onChanged: (_) => ref.read(todoListProvider.notifier).toggle(index),
+        onChanged: (_) {
+          final originalIndex = ref.read(todoListProvider).indexOf(todo);
+          ref.read(todoListProvider.notifier).toggle(originalIndex);
+        },
       ),
       title: Text(
         todo.title,
@@ -74,7 +77,10 @@ class TodoTile extends ConsumerWidget {
       ),
       trailing: IconButton(
         icon: const Icon(Icons.delete),
-        onPressed: () => ref.read(todoListProvider.notifier).remove(index),
+        onPressed: () {
+          final originalIndex = ref.read(todoListProvider).indexOf(todo);
+          ref.read(todoListProvider.notifier).remove(originalIndex);
+        },
       ),
     );
   }

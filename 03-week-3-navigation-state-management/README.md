@@ -177,6 +177,85 @@ Test gagal karena kesalahan import relative path dan tidak override method saat 
 
 <img src="screenshots/success.png" height="100px" style="display: block; margin: 0 auto;">
 
+## Refactoring
+
+### Pisahkan widget bar ToDo menjadi TodoTile tersendiri agar build lebih pendek dan mudah diuji.
+
+`ListTile` untuk ToDo telah dipisahkan menjadi wigdet sendiri yaitu `TodoTile`. Refactor ini memudahkan debugging karena memisahkan bagian kode ke bagian lebih kecil terpisah daripada menaruh semuanya di 1 bagian besar
+
+Awal:
+```
+return Scaffold(
+  appBar: AppBar(title: const Text('ToDo Riverpod')),
+  body: todos.isEmpty
+      ? const Center(child: Text('Belum ada tugas'))
+      : ListView.builder(
+          itemCount: todos.length,
+          ...
+```
+Refactor:
+              
+```
+return Scaffold(
+  appBar: AppBar(title: const Text('ToDo Riverpod')),
+  body: todos.isEmpty
+      ? const Center(child: Text('Belum ada tugas'))
+      : ListView.builder(
+          itemCount: todos.length,
+          itemBuilder: (context, index) =>
+            TodoTile(todo: todos[index], index: index),
+        ),
+```
+```
+class TodoTile extends ConsumerWidget {
+  final Todo todo;
+  final int index;
+
+  const TodoTile({super.key, required this.todo, required this.index});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      leading: Checkbox(
+        ...
+```
+
+### Ekstrak logika filter (misal tampilkan hanya yang belum selesai) menjadi Provider turunan yang membaca todoListProvider.
+
+Membuat `uncompletedListProvider` yang hanya membaca tugas yang belum selesai, berupa turunan dari `todoListProvider`:
+
+```
+final uncompletedListProvider = Provider<List<Todo>>((ref) {
+  final allTodos = ref.watch(todoListProvider);
+
+  return allTodos.where((tugas) => tugas.done == false).toList();
+});
+```
+
+Update Page untuk `watch` ke Provider baru dan mengganti state `onChanged` dan `onPressed` untuk menyimpan index asli dahulu, karena provider utama dan provider uncompleted membaca list berbeda, index 1 di uncompleted bisa saja adalah index 2 di default karena index 0 dihapus dan tidak tampil di uncompleted
+
+```
+final todos = ref.watch(uncompletedListProvider);
+
+...
+
+onChanged: (_) {
+  final originalIndex = ref.read(todoListProvider).indexOf(todo);
+  ref.read(todoListProvider.notifier).toggle(originalIndex);
+},
+
+...
+
+onPressed: () {
+  final originalIndex = ref.read(todoListProvider).indexOf(todo);
+  ref.read(todoListProvider.notifier).remove(originalIndex);
+},
+```
+
+### Integrasikan aplikasi ToDo dengan GoRouter: / untuk daftar dan /stats untuk halaman statistik, tambahkan NavigationBar untuk berpindah.
+
+Membuat halaman baru `week3_todo/lib/pages/main_page.dart` untuk tempat navigation bar dan implementasi `ShellRoute` dan `GoRoute` di `week3_todo/lib/main.dart` 
+
 ## Testing
 
 Saat dijalankan terdapat error: 

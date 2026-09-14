@@ -35,6 +35,24 @@ Semua fitur berjalan dengan normal, tidak ada yang error, dan yang ditanyakan te
 
 # Week 3: Navigation & State Management
 
+## Kapan setState masih cukup, dan kapan state harus naik ke Riverpod?
+
+`setState` cukup untuk mengelola state yang bersifat lokal, sementara, dan hanya relevan untuk UI di satu layar tersebut (misalnya untuk mengontrol jalannya animasi, menyembunyikan/menampilkan menu dropdown, atau menyimpan isian karakter sementara pada TextField). Riverpod cocok jika menjadi global, ketika data tersebut mulai dibutuhkan oleh layar/halaman lain, memiliki logika bisnis yang rumit, atau ketika ingin datanya tetap aman tersimpan di memori meskipun pengguna sudah menavigasi keluar dan kembali lagi ke halaman tersebut di lain waktu
+
+## Apa perbedaan context.go dan context.push, dan kapan masing-masing tepat digunakan?
+
+`context.go` membuang tumpukan lama dan membentuk struktur halaman baru sesuai rutenya, digunakan untuk berpindah antar Tab menu utama atau forward paksa pengguna ke layar Login agar mereka tidak bisa menekan tombol Back
+
+`context.push` meminjam halaman baru dan sekadar menumpuk di atas layar saat ini, digunakan untuk alur pendalaman, misal dari halaman "Daftar Produk" ke halaman "Detail Produk", dimana wajib ada tombol Back agar pengguna bisa kembali ke halaman asal
+
+## Bagaimana AsyncValue mencegah bug dibanding tiga boolean terpisah?
+
+Riverpod memaksa data hanya bisa berada di satu kondisi pasti dalam satu waktu, jika ia berubah menjadi Error, maka Loading otomatis musnah di detik itu juga, sehingga mustahil terjadi bentrok tampilan di aplikasi
+
+## Bagian mana dari hasil AI yang Anda perbaiki, dan mengapa?
+
+Di menu utama (provider dan page), tidak ada yang diubah karena sesuai dengan prompt. Hanya bagian test yang error, dan diperbaiki karena itu
+
 # Week 4: Networking & REST API
 
 # Week 5: Local Storage & Offline First

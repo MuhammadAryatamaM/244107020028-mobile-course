@@ -6,11 +6,17 @@ import 'dart:async';
 import 'api_client.dart';
 import 'models/post.dart';
 import 'repositories/post_repository.dart';
+import 'models/comment.dart';
+import 'repositories/comment_repository.dart';
 
 final dioProvider = Provider<Dio>((ref) => createDio());
 
 final postRepositoryProvider = Provider<PostRepository>(
   (ref) => PostRepository(ref.watch(dioProvider)),
+);
+
+final commentRepositoryProvider = Provider<CommentRepository>(
+  (ref) => CommentRepository(ref.watch(dioProvider)),
 );
 
 class PostListNotifier extends AsyncNotifier<List<Post>> {
@@ -39,6 +45,38 @@ final postListProvider = AsyncNotifierProvider<PostListNotifier, List<Post>>(
   // final dan mudah diuji (tanpa ini, future provider di-test
   // akan me-retry dan menggantung).
   retry: (retryCount, error) => null,
+);
+
+/// Provider menggunakan AsyncNotifier untuk menerima argumen [postId].
+/// Mengelola state komentar berdasarkan postId yang diberikan (via parameter constructor Riverpod 3).
+class CommentListNotifier extends AsyncNotifier<List<Comment>> {
+  final int postId;
+  CommentListNotifier(this.postId);
+
+  @override
+  Future<List<Comment>> build() async {
+    // Exception dari repository otomatis menjadi AsyncError (ditangani Riverpod).
+    // Nantinya di UI bisa ditangkap dan ditampilkan menggunakan fungsi
+    // [friendlyErrorMessage] yang sudah menangani timeout, connection error, 404, dan 500.
+    final repository = ref.watch(commentRepositoryProvider);
+    return repository.fetchComments(postId);
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    try {
+      final repository = ref.read(commentRepositoryProvider);
+      state = AsyncData(await repository.fetchComments(postId));
+    } catch (e, st) {
+      // Menangkap error jika refresh gagal dan update state
+      state = AsyncError(e, st);
+    }
+  }
+}
+
+final commentListProvider = AsyncNotifierProvider.family<CommentListNotifier, List<Comment>, int>(
+  CommentListNotifier.new,
+  retry: (retryCount, error) => null, // non-retryable for straightforward testing
 );
 
 /// Helper khusus testing (letakkan di providers.dart): membaca state

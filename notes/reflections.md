@@ -55,6 +55,23 @@ Di menu utama (provider dan page), tidak ada yang diubah karena sesuai dengan pr
 
 # Week 4: Networking & REST API
 
+## Mengapa UI dilarang memanggil Dio langsung? Apa yang rusak jika aturan ini dilanggar?
+
+Memanggil Dio secara langsung dari UI melanggar prinsip Separation of Concerns (SoC) dan arsitektur Clean Code, membuat UI terikat dengan mekanisme pengambilan data. Jika aturan dilanggar, UI akan menjadi sulit diuji karena memerlukan HTTP client langsung di komponen tampilan, kode menjadi sulit dipelihara akibat logika bisnis berserakan di widget, dan aplikasi menjadi kaku di mana perubahan endpoint, header API, atau migrasi library HTTP di masa depan akan memaksa untuk merombak kode di seluruh file UI aplikasi
+
+## Kapan pagination client-side cukup, dan kapan harus mengandalkan pagination server (_page/_limit)?
+
+- Pagination Client-Side artinya download semua data, baru menampilkannya misal 20 demi 20 di aplikasi. Cukup kalau data bersifat statis dan berukuran kecil.                                                                                                                 
+- Pagination Server-Sidea artinya meminta data dari database server sesuai yang dilihat pengguna misal hanya 10 item. Wajib jika data berpotensi tumbuh tanpa batas (ribuan hingga jutaan)                             
+
+## Bagaimana exception repository berubah menjadi AsyncError tanpa try/catch di setiap widget? Kapan try/catch eksplisit tetap dibutuhkan?
+
+Saat mengembalikan sebuah Future di dalam method `build()` milik AsyncNotifier maupun FutureProvider, Riverpod sudah ada try/catch-nya sendiri. Ketika fetchPosts() melempar error jaringan, Riverpod akan menangkapnya dan otomatis menghentikan status Loading, lalu mengubah state menjadi tipe AsyncError. Di UI, pakai `.when(error: ...)` untuk menanganinya. Gunakan try/catch eksplisit saat mutasi data dari aksi user (tambah/edit/hapus/refresh manual) yang berada di luar `build()` Riverpod
+
+## Bagian mana dari hasil AI yang Anda perbaiki, dan mengapa?
+
+Tidak ada yang diperbaiki
+
 # Week 5: Local Storage & Offline First
 
 # Week 6: Authentication, Security & FCM

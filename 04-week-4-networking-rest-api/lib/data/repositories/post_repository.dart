@@ -20,4 +20,14 @@ class PostRepository {
     final data = response.data ?? [];
     return data.whereType<Map<String, dynamic>>().map(Post.fromJson).toList();
   }
+
+  /// Mengambil single post berdasarkan ID
+  Future<Post> fetchPost(int id) async {
+    final response = await _dio.get<Map<String, dynamic>>('/posts/$id');
+    final data = response.data;
+    if (data == null) {
+      throw Exception('Post tidak ditemukan');
+    }
+    return Post.fromJson(data);
+  }
 }

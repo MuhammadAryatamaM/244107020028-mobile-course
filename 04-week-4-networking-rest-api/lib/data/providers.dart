@@ -8,6 +8,7 @@ import 'models/post.dart';
 import 'repositories/post_repository.dart';
 import 'models/comment.dart';
 import 'repositories/comment_repository.dart';
+import 'paged_posts.dart';
 
 final dioProvider = Provider<Dio>((ref) => createDio());
 
@@ -46,6 +47,28 @@ final postListProvider = AsyncNotifierProvider<PostListNotifier, List<Post>>(
   // akan me-retry dan menggantung).
   retry: (retryCount, error) => null,
 );
+
+/// Provider untuk mengambil single post.
+/// Memeriksa terlebih dahulu apakah post sudah ada di state list (cache).
+/// Jika belum ada, baru fetch lewat repository.
+final singlePostProvider = FutureProvider.family<Post, int>((ref, id) async {
+  // Coba cari di postListProvider (mode non-paged)
+  final postList = ref.read(postListProvider).value;
+  if (postList != null) {
+    for (final p in postList) {
+      if (p.id == id) return p;
+    }
+  }
+
+  // Coba cari di pagedPostsProvider (mode paged)
+  final pagedState = ref.read(pagedPostsProvider);
+  for (final p in pagedState.items) {
+    if (p.id == id) return p;
+  }
+
+  // Jika tidak ditemukan di memori, ambil dari repository
+  return ref.watch(postRepositoryProvider).fetchPost(id);
+});
 
 /// Provider menggunakan AsyncNotifier untuk menerima argumen [postId].
 /// Mengelola state komentar berdasarkan postId yang diberikan (via parameter constructor Riverpod 3).

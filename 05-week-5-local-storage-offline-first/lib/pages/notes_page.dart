@@ -6,6 +6,7 @@ import '../data/repositories/note_repository.dart';
 
 import '../data/network_provider.dart';
 import '../data/sync_service.dart';
+import '../widgets/note_tile.dart';
 
 final notesProvider = FutureProvider.autoDispose<List<Note>>((ref) async {
   final repo = ref.watch(noteRepositoryProvider);
@@ -99,19 +100,8 @@ class NotesPage extends ConsumerWidget {
             itemCount: notes.length,
             itemBuilder: (context, index) {
               final note = notes[index];
-              return ListTile(
-                title: Text(note.title),
-                subtitle: Text(
-                  note.body,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: note.dirty
-                    ? const Icon(
-                        Icons.cloud_upload_outlined,
-                        color: Colors.orange,
-                      )
-                    : null,
+              return NoteTile(
+                note: note,
                 onTap: () {
                   // TODO: implement note editing
                 },

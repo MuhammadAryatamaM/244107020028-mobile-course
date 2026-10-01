@@ -37,6 +37,13 @@ class NoteRepository {
     );
   }
 
+  Future<Note?> getNote(int id) async {
+    final db = await _openDb();
+    final rows = await db.query('notes', where: 'id = ?', whereArgs: [id]);
+    if (rows.isEmpty) return null;
+    return Note.fromMap(rows.first);
+  }
+
   Future<void> deleteNote(int id) async {
     final db = await _openDb();
     await db.delete('notes', where: 'id = ?', whereArgs: [id]);

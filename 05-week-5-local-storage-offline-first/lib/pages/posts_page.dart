@@ -1,20 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../data/local/note.dart';
+import '../data/repositories/note_repository.dart';
 
 import '../data/network_provider.dart';
 import '../data/sync.dart';
+import '../widgets/note_tile.dart';
 
-class PostsPage extends ConsumerWidget {
-  const PostsPage({super.key});
+final notesProvider = FutureProvider.autoDispose<List<Note>>((ref) async {
+  final repo = ref.watch(noteRepositoryProvider);
+  return repo.fetchNotes();
+});
+
+final dirtyCountProvider = FutureProvider.autoDispose<int>((ref) async {
+  final repo = ref.watch(noteRepositoryProvider);
+  return repo.countDirty();
+});
+
+class NotesPage extends ConsumerWidget {
+  const NotesPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final postsAsync = ref.watch(postsProvider);
+    final notesAsync = ref.watch(notesProvider);
+    final dirtyCountAsync = ref.watch(dirtyCountProvider);
     final isOffline = ref.watch(forceOfflineProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('API Posts (Cache-First)'),
+        title: const Text('Offline Notes'),
         actions: [
           Row(
             children: [
@@ -27,44 +43,97 @@ class PostsPage extends ConsumerWidget {
               ),
             ],
           ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              ref.invalidate(postsProvider);
-            },
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.sync),
+                onPressed: () async {
+                  try {
+                    final syncService = ref.read(syncServiceProvider);
+                    await syncService.syncNotes();
+                    ref.invalidate(notesProvider);
+                    ref.invalidate(dirtyCountProvider);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Sync successful!')),
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Sync failed: $e')),
+                      );
+                    }
+                  }
+                },
+              ),
+              if (dirtyCountAsync.hasValue && dirtyCountAsync.value! > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '${dirtyCountAsync.value}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),
-      body: postsAsync.when(
-        data: (posts) {
-          if (posts.isEmpty) {
-            return const Center(child: Text('Cache kosong & belum ada data.'));
+      body: notesAsync.when(
+        data: (notes) {
+          if (notes.isEmpty) {
+            return const Center(child: Text('No notes yet.'));
           }
           return ListView.builder(
-            itemCount: posts.length,
+            itemCount: notes.length,
             itemBuilder: (context, index) {
-              final post = posts[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: ListTile(
-                  leading: CircleAvatar(child: Text('${post.id}')),
-                  title: Text(
-                    post.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: Text(
-                    post.body,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
+              final note = notes[index];
+              return NoteTile(
+                note: note,
+                onTap: () {
+                  if (note.id != null) {
+                    context.push('/note/${note.id}');
+                  }
+                },
+                onLongPress: () async {
+                  if (note.id != null) {
+                    await ref.read(noteRepositoryProvider).deleteNote(note.id!);
+                    ref.invalidate(notesProvider);
+                    ref.invalidate(dirtyCountProvider);
+                  }
+                },
               );
             },
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await ref
+              .read(noteRepositoryProvider)
+              .addNote(
+                title: 'New Note ${DateTime.now().second}',
+                body: 'Note created at ${DateTime.now().toIso8601String()}',
+              );
+          ref.invalidate(notesProvider);
+          ref.invalidate(dirtyCountProvider);
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

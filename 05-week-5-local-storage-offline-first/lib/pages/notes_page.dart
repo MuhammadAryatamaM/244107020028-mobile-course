@@ -5,7 +5,7 @@ import '../data/local/note.dart';
 import '../data/repositories/note_repository.dart';
 
 import '../data/network_provider.dart';
-import '../data/sync_service.dart';
+import '../data/sync.dart';
 import '../widgets/note_tile.dart';
 
 final notesProvider = FutureProvider.autoDispose<List<Note>>((ref) async {

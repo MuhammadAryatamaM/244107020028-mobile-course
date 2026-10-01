@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/network_provider.dart';
-import '../data/repositories/post_repository.dart';
+import '../data/sync.dart';
 
 class PostsPage extends ConsumerWidget {
   const PostsPage({super.key});

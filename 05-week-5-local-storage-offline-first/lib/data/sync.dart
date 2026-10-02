@@ -6,6 +6,27 @@ import 'repositories/post_repository.dart';
 import 'network_provider.dart';
 import 'local/post.dart';
 
+// ATURAN KONFLIK
+//
+// 1. NOTES (tulisan user)
+//    - Strategy: Last-Write-Wins (LWW) dengan dirty flag
+//    - Setiap catatan baru/updated ditandai dirty = 1
+//    - syncNotes() mengirim semua catatan dirty ke server
+//    - Setelah server respond 2xx, dirty flag di-clear (markAllSynced)
+//    - Jika server mengembalikan konflik (409), versi server menang
+//      (client-side changes di-overwrite oleh server)
+//
+// 2. POSTS (data bacaan)
+//    - Strategy: Cache-First dengan background refresh
+//    - Cache lama tetap ditampilkan selama fetch baru berlangsung
+//    - Jika fetch gagal (offline/error), cache lama tetap dipakai
+//    - Tidak ada konflik karena posts adalah read-only dari user
+//
+// 3. FORCE OFFLINE MODE
+//    - Saat aktif, syncNotes() throw exception
+//    - Saat aktif, refreshPostsInBackground() di-skip
+//    - User tetap bisa membaca cache dan membuat catatan baru
+
 final syncServiceProvider = Provider((ref) {
   final repo = ref.watch(noteRepositoryProvider);
   return SyncService(repo, ref);
@@ -35,10 +56,6 @@ class SyncService {
     return dirtyCount;
   }
 }
-
-// ---------------------------------------------------------------------------
-// Posts Cache-First Sync
-// ---------------------------------------------------------------------------
 
 final postsSyncServiceProvider = Provider((ref) {
   final repo = ref.watch(postRepositoryProvider);

@@ -61,7 +61,7 @@ Memanggil Dio secara langsung dari UI melanggar prinsip Separation of Concerns (
 
 ## Kapan pagination client-side cukup, dan kapan harus mengandalkan pagination server (_page/_limit)?
 
-- Pagination Client-Side artinya download semua data, baru menampilkannya misal 20 demi 20 di aplikasi. Cukup kalau data bersifat statis dan berukuran kecil.                                                                                                                 
+- Pagination Client-Side artinya download semua data, baru menampilkannya misal 20 demi 20 di aplikasi. Cukup kalau data bersifat statis dan berukuran kecil.                                                                                          
 - Pagination Server-Sidea artinya meminta data dari database server sesuai yang dilihat pengguna misal hanya 10 item. Wajib jika data berpotensi tumbuh tanpa batas (ribuan hingga jutaan)                             
 
 ## Bagaimana exception repository berubah menjadi AsyncError tanpa try/catch di setiap widget? Kapan try/catch eksplisit tetap dibutuhkan?
@@ -73,6 +73,22 @@ Saat mengembalikan sebuah Future di dalam method `build()` milik AsyncNotifier m
 Tidak ada yang diperbaiki
 
 # Week 5: Local Storage & Offline First
+
+## Mengapa daftar catatan tidak boleh disimpan di SharedPreferences? Apa yang rusak jika aturan ini dilanggar?
+
+SharedPreferences hanya untuk key-value sederhana (boolean, string), bukan untuk data terstruktur dengan relasi dan query
+
+## Kapan cache-first cukup, dan kapan Anda membutuhkan strategi lain (misalnya network-first untuk data harga real-time)?
+
+Cache-first untuk data yang toleran terhadap stale (posts, catatan) karena UX lebih penting dari freshness. Network-first untuk data yang harus real-time (harga, stok, saldo) karena menampilkan data lama bisa membuat kerugian atau keputusan salah
+
+## Bagaimana dirty flag berubah menjadi antrean sync tanpa memblokir UI? Kapan antrean terpisah (tabel outbox) menjadi perlu?
+
+Setiap operasi tulis langsung update SQLite + set `dirty = 1`, lalu `syncNotes()` dijalankan async di background untuk upload semua dirty records. Tabel outbox terpisah diperlukan ketika butuh retry per-item, tracking status (pending/sent/failed), atau urutan upload
+
+## Bagian mana dari rekomendasi AI yang Anda tolak, dan mengapa?
+
+Tidak ada
 
 # Week 6: Authentication, Security & FCM
 

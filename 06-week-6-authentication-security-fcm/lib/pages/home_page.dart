@@ -30,6 +30,20 @@ class _HomePageState extends ConsumerState<HomePage> {
             _fcmToken = token;
           });
         }
+
+        // Kirim token FCM ke API backend & tangkap error jika jaringan bermasalah
+        try {
+          await ref.read(authRepositoryProvider).postDeviceToken(token);
+        } catch (errorMessage) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(errorMessage.toString()),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
       },
     );
   }
@@ -79,7 +93,6 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              // Gunakan helper statis AppRoutes.announcementDetail('101')
               onPressed: () => context.go(AppRoutes.announcementDetail('101')),
               child: const Text('Buka Pengumuman #101'),
             ),

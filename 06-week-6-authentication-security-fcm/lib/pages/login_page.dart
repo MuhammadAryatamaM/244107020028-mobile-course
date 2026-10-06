@@ -23,6 +23,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Memantau perubahan state login untuk SnackBar otomatis
+    ref.listen<AsyncValue<bool>>(authStateProvider, (previous, next) {
+      if (next.hasError && !next.isLoading) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.error.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    });
+
     final authState = ref.watch(authStateProvider);
 
     return Scaffold(
@@ -43,11 +55,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             ),
             const SizedBox(height: 20),
             if (authState.hasError)
-              Text(
-                'Error: ${authState.error}',
-                style: const TextStyle(color: Colors.red),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Text(
+                  authState.error.toString(),
+                  style: const TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
               ),
-            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: authState.isLoading
                   ? null
@@ -60,7 +75,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           );
                     },
               child: authState.isLoading
-                  ? const CircularProgressIndicator()
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : const Text('Login'),
             ),
           ],

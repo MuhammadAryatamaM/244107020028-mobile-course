@@ -8,6 +8,16 @@ import '../routes.dart';
 
 final _local = FlutterLocalNotificationsPlugin();
 
+// Fungsi murni untuk mengekstrak rute dari payload data Firebase / RemoteMessage.
+// Mengembalikan [AppRoutes.home] jika rute tidak ditemukan atau kosong.
+String routeFromMessage(Map<String, dynamic> data) {
+  final route = data['route'];
+  if (route is String && route.trim().isNotEmpty) {
+    return route;
+  }
+  return AppRoutes.home;
+}
+
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -69,7 +79,8 @@ void listenForeground(void Function(String route) go) {
   if (Platform.isLinux || Platform.isWindows) return;
 
   FirebaseMessaging.onMessage.listen((message) async {
-    final route = message.data['route'] ?? AppRoutes.home;
+    // pakai routeFromMessage
+    final route = routeFromMessage(message.data);
 
     const androidDetails = AndroidNotificationDetails(
       'pengumuman_channel',
@@ -90,7 +101,8 @@ void listenForeground(void Function(String route) go) {
   });
 
   FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    final route = message.data['route'] ?? AppRoutes.home;
+    // pakai routeFromMessage
+    final route = routeFromMessage(message.data);
     go(route);
   });
 }
@@ -100,7 +112,8 @@ Future<void> handleTerminated(void Function(String route) go) async {
 
   final initial = await FirebaseMessaging.instance.getInitialMessage();
   if (initial != null) {
-    final route = initial.data['route'] ?? AppRoutes.home;
+    // pakai routeFromMessage
+    final route = routeFromMessage(initial.data);
     Future.delayed(const Duration(milliseconds: 500), () {
       go(route);
     });

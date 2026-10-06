@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'firebase_options.dart';
 import 'messaging/push_service.dart';
 import 'pages/announcement_page.dart';
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 import 'providers/auth_provider.dart';
+import 'routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   registerBackgroundHandler();
   await requestNotificationPermission();
@@ -23,21 +25,27 @@ final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
 
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: AppRoutes.home,
     refreshListenable: ValueNotifier(authState),
     redirect: (context, state) {
       final loggedIn = authState.value ?? false;
-      final goingLogin = state.matchedLocation == '/login';
+      final goingLogin = state.matchedLocation == AppRoutes.login;
 
-      if (!loggedIn && !goingLogin) return '/login';
-      if (loggedIn && goingLogin) return '/';
+      if (!loggedIn && !goingLogin) return AppRoutes.login;
+      if (loggedIn && goingLogin) return AppRoutes.home;
       return null;
     },
     routes: [
-      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
-      GoRoute(path: '/', builder: (context, state) => const HomePage()),
       GoRoute(
-        path: '/pengumuman/:id',
+        path: AppRoutes.login,
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.home,
+        builder: (context, state) => const HomePage(),
+      ),
+      GoRoute(
+        path: AppRoutes.announcementDetailPath,
         builder: (context, state) =>
             AnnouncementPage(id: state.pathParameters['id'] ?? ''),
       ),
@@ -58,7 +66,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       void navigateFromNotif(String route) {
-        if (route == '/') return; // cegah redirect kosong
+        if (route == AppRoutes.home || route.isEmpty) return;
 
         Future.delayed(const Duration(milliseconds: 200), () {
           if (mounted) {
@@ -67,13 +75,8 @@ class _MyAppState extends ConsumerState<MyApp> {
         });
       }
 
-      // Gunakan await agar channel & listener lokal siap sepenuhnya
       await initLocalNotifications(navigateFromNotif);
-
-      // Setup Listener FCM (Foreground & Background click)
       listenForeground(navigateFromNotif);
-
-      // Setup Terminated state
       handleTerminated(navigateFromNotif);
     });
   }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../messaging/push_service.dart';
 import '../providers/auth_provider.dart';
+import '../routes.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -24,15 +25,15 @@ class _HomePageState extends ConsumerState<HomePage> {
   Future<void> _setupFcm() async {
     await initFcmToken(
       onToken: (token) async {
-        if (mounted) setState(() => _fcmToken = token);
-
-        // TODO: Tambahkan baris ini saat backend sudah siap
-        // await ref.read(apiProvider).postDeviceToken(token);
+        if (mounted) {
+          setState(() {
+            _fcmToken = token;
+          });
+        }
       },
     );
   }
 
-  // Fungsi memotong token (Aman untuk Laporan)
   String _formatToken(String token) {
     if (token.length > 12) {
       return '${token.substring(0, 12)}...';
@@ -60,8 +61,6 @@ class _HomePageState extends ConsumerState<HomePage> {
           children: [
             const Text('Selamat Datang di Halaman Utama!'),
             const SizedBox(height: 20),
-
-            // Tampilan Token Terpotong untuk Screenshot Laporan
             Card(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               child: Padding(
@@ -78,10 +77,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => context.go('/pengumuman/101'),
+              // Gunakan helper statis AppRoutes.announcementDetail('101')
+              onPressed: () => context.go(AppRoutes.announcementDetail('101')),
               child: const Text('Buka Pengumuman #101'),
             ),
             const SizedBox(height: 12),

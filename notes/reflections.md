@@ -92,6 +92,24 @@ Tidak ada
 
 # Week 6: Authentication, Security & FCM
 
+## Mengapa refresh token tidak boleh disimpan di SharedPreferences? Apa risikonya bila bocor?
+
+SharedPreferences menyimpan data dalam bentuk plaintext tanpa enkripsi sehingga rentan diakses oleh malware atau perangkat root. Risikonya, peretas dapat mencuri token tersebut untuk mengambil sesi login pengguna secara permanen
+
+## Apa yang rusak bila onTokenRefresh diabaikan selama satu semester perkuliahan?
+
+Token FCM di backend menjadi expired,  menyebabkan pengiriman push notification gagal total sehingga mahasiswa tidak akan menerima informasi atau pengumuman kampus sepanjang semester
+
+## Kapan memakai topik dan kapan memakai token perangkat? Beri contoh pesan kampus untuk masing-masing.
+
+- Topik (Broadcast): Digunakan untuk informasi umum ke grup pengguna. Contoh: "Pengumuman: Seluruh kegiatan perkuliahan ditiadakan pada hari libur nasional."
+
+- Token Perangkat (Personal): Digunakan untuk notifikasi spesifik ke satu mahasiswa. Contoh: "Pengajuan revisi skripsi Anda (#101) telah disetujui oleh Dosen Pembimbing."
+
+## Bagian mana dari draf AI yang Anda tolak atau perbaiki, dan mengapa?
+
+Tidak ada
+
 # Week 7: Clean Architecture
 
 # Week 9: AI-assisted Development / Vibe Coding

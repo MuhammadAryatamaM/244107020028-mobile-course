@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:campus_notify/core/format.dart';
 import 'package:campus_notify/features/announcements/presentation/providers/announcements_providers.dart';
 import 'package:campus_notify/features/announcements/domain/entities/announcement.dart';
 
@@ -27,12 +28,16 @@ class AnnouncementDetailPage extends ConsumerWidget {
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 12),
-                const Text('Gagal memuat detail', style: TextStyle(fontSize: 18)),
+                const Text(
+                  'Gagal memuat detail',
+                  style: TextStyle(fontSize: 18),
+                ),
                 const SizedBox(height: 8),
                 Text(err.toString(), textAlign: TextAlign.center),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
-                  onPressed: () => ref.invalidate(announcementDetailProvider(id)),
+                  onPressed: () =>
+                      ref.invalidate(announcementDetailProvider(id)),
                   icon: const Icon(Icons.refresh),
                   label: const Text('Coba Lagi'),
                 ),
@@ -41,48 +46,45 @@ class AnnouncementDetailPage extends ConsumerWidget {
           ),
         ),
         data: (Announcement announcement) => SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (announcement.imageUrl != null) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        announcement.imageUrl!,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                  Text(
-                    announcement.title,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (announcement.imageUrl != null) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    announcement.imageUrl!,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Diperbarui: ${_formatDate(announcement.updatedAt)}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 16),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  Text(
-                    announcement.body,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.5),
-                  ),
-                ],
+                ),
+                const SizedBox(height: 16),
+              ],
+              Text(
+                announcement.title,
+                style: Theme.of(context).textTheme.headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
-            ),
+              const SizedBox(height: 8),
+              Text(
+                'Diperbarui: ${formatDateTime(announcement.updatedAt)}',
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: Colors.grey),
+              ),
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 8),
+              Text(
+                announcement.body,
+                style: Theme.of(context).textTheme.bodyLarge
+                    ?.copyWith(height: 1.5),
+              ),
+            ],
+          ),
+        ),
       ),
     );
-  }
-
-  String _formatDate(DateTime dt) {
-    return '${dt.day}/${dt.month}/${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
   }
 }

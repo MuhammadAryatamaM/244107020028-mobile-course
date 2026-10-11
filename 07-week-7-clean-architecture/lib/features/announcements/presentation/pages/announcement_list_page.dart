@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:campus_notify/core/format.dart';
 import 'package:campus_notify/features/announcements/presentation/providers/announcements_providers.dart';
 import 'package:campus_notify/features/auth/presentation/providers/auth_providers.dart';
 import 'package:campus_notify/features/notifications/presentation/providers/push_providers.dart';
@@ -42,10 +43,6 @@ class _AnnouncementListPageState extends ConsumerState<AnnouncementListPage> {
         }
       }
     }
-  }
-
-  String _formatDate(DateTime dt) {
-    return '${dt.day}/${dt.month}/${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -152,7 +149,7 @@ class _AnnouncementListPageState extends ConsumerState<AnnouncementListPage> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          _formatDate(a.updatedAt),
+                          formatDateTime(a.updatedAt),
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
                         ),
                       ],

@@ -5,21 +5,12 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:campus_notify/core/format.dart';
 import 'package:campus_notify/core/failures.dart';
 import 'package:campus_notify/features/auth/domain/repositories/i_auth_repository.dart';
 import 'package:campus_notify/features/notifications/domain/services/i_push_service.dart';
-import 'package:campus_notify/routes.dart';
 
 final _localNotifications = FlutterLocalNotificationsPlugin();
-
-/// Extract route from FCM message data payload.
-String routeFromMessage(Map<String, dynamic> data) {
-  final route = data['route'];
-  if (route is String && route.trim().isNotEmpty) {
-    return route;
-  }
-  return AppRoutes.home;
-}
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {

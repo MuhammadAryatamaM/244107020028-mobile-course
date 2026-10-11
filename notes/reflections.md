@@ -112,6 +112,22 @@ Tidak ada
 
 # Week 7: Clean Architecture
 
+## Mengapa interface repository harus tinggal di domain, bukan di data? Apa yang rusak bila dibalik?
+
+Karena domain mendefinisikan "kontrak bisnis", data hanya implementasi. Kalau dibalik, domain bergantung pada detail implementasi (Dio, SQLite, Firebase), jadinya tidak bisa test mock dan tidak bisa ganti data source tanpa ubah domain
+
+## Kapan use case benar-benar dibutuhkan, dan kapan repository langsung ke notifier sudah cukup?
+
+Use case wajib kalau ada gabungan lebih dari 1 repo, validasi bisnis, atau logika reusable (contoh: LoginUseCase = login + simpan token + kirim FCM). CRUD sederhana 1 repo 1 operasi → repository → notifier sudah cukup (seperti GetAnnouncementsUseCase yang cuma delegasi ke repo)
+
+## Apa biaya over-engineering (use case per CRUD satu-baris) bagi tim kecil? Kapan biayanya sepadan?
+
+Use case per CRUD satu baris menambah boilerplate ~3 file per operasi, memperlambat delivery tim kecil tanpa manfaat. Biayanya sepadan saat logika bisnis tumbuh (validasi, transaksi, multi-repo) atau tim butuh untuk parallel development.
+
+## Bagian mana dari usulan AI yang Anda tolak atau sederhanakan, dan mengapa?
+
+Tidak ada yang ditolak, hanya memperbaiki setelahnya (seperti kesalahan format import) karena secara logika masih bekerja
+
 # Week 9: AI-assisted Development / Vibe Coding
 
 # Week 10: AI Feature Integration

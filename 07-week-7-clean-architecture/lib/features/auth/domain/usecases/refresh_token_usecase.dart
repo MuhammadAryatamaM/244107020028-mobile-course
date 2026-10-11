@@ -2,9 +2,9 @@
 /// Shared by [AuthNotifier] (manual refresh) and [ApiClient] interceptor (auto-refresh on 401).
 ///
 /// Returns new access token on success, [Failure] on error.
-import '../../repositories/i_auth_repository.dart';
-import '../../repositories/i_token_store.dart';
-import '../../../../core/failures.dart';
+import 'package:campus_notify/core/failures.dart';
+import 'package:campus_notify/features/auth/domain/repositories/i_auth_repository.dart';
+import 'package:campus_notify/features/auth/domain/repositories/i_token_store.dart';
 
 class RefreshTokenUseCase {
   const RefreshTokenUseCase({

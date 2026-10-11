@@ -3,7 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/announcements_providers.dart';
+import 'package:campus_notify/features/announcements/presentation/providers/announcements_providers.dart';
+import 'package:campus_notify/features/announcements/domain/entities/announcement.dart';
 
 class AnnouncementDetailPage extends ConsumerWidget {
   const AnnouncementDetailPage({required this.id, super.key});
@@ -39,7 +40,7 @@ class AnnouncementDetailPage extends ConsumerWidget {
             ),
           ),
         ),
-        data: (announcement) => SingleChildScrollView(
+        data: (Announcement announcement) => SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

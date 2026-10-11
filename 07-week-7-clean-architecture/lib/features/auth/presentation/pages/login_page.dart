@@ -2,9 +2,7 @@
 /// No direct repository, Dio, or data layer imports.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../providers/auth_providers.dart';
-import '../../../../routes.dart';
+import 'package:campus_notify/features/auth/presentation/providers/auth_providers.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});

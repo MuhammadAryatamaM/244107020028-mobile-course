@@ -1,13 +1,11 @@
 /// Authentication repository implementation.
 /// Implements [IAuthRepository] using Dio for HTTP and [ITokenStore] for storage.
 import 'package:dio/dio.dart';
-
-import '../../../../core/failures.dart';
-import '../../../domain/entities/auth_session.dart';
-import '../../../domain/repositories/i_auth_repository.dart';
-import '../../../domain/repositories/i_token_store.dart';
+import 'package:campus_notify/core/failures.dart';
+import 'package:campus_notify/features/auth/domain/entities/auth_session.dart';
+import 'package:campus_notify/features/auth/domain/repositories/i_auth_repository.dart';
+import 'package:campus_notify/features/auth/domain/repositories/i_token_store.dart';
 import '../models/auth_session_dto.dart';
-import '../datasources/api_client.dart';
 
 class AuthRepositoryImpl implements IAuthRepository {
   AuthRepositoryImpl({

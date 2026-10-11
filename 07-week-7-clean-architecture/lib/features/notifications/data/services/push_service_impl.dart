@@ -5,16 +5,15 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-import '../../../../core/failures.dart';
-import '../../../../auth/domain/repositories/i_auth_repository.dart';
-import '../../../domain/services/i_push_service.dart';
-import '../../../../routes.dart';
+import 'package:campus_notify/core/failures.dart';
+import 'package:campus_notify/features/auth/domain/repositories/i_auth_repository.dart';
+import 'package:campus_notify/features/notifications/domain/services/i_push_service.dart';
+import 'package:campus_notify/routes.dart';
 
 final _localNotifications = FlutterLocalNotificationsPlugin();
 
 /// Extract route from FCM message data payload.
-String _routeFromMessage(Map<String, dynamic> data) {
+String routeFromMessage(Map<String, dynamic> data) {
   final route = data['route'];
   if (route is String && route.trim().isNotEmpty) {
     return route;
@@ -30,7 +29,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class PushServiceImpl implements IPushService {
-  PushServiceImpl({IAuthRepository? authRepository}) : _authRepository = authRepository;
+  PushServiceImpl({IAuthRepository? authRepository})
+    : _authRepository = authRepository;
 
   final IAuthRepository? _authRepository;
   bool _initialized = false;
@@ -45,7 +45,9 @@ class PushServiceImpl implements IPushService {
 
     // Register background handler (platform specific)
     if (!Platform.isLinux && !Platform.isWindows) {
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      FirebaseMessaging.onBackgroundMessage(
+        _firebaseMessagingBackgroundHandler,
+      );
     }
 
     // Request permission
@@ -78,7 +80,9 @@ class PushServiceImpl implements IPushService {
     }
   }
 
-  Future<void> _initLocalNotifications(Future<void> Function(String route) onTap) async {
+  Future<void> _initLocalNotifications(
+    Future<void> Function(String route) onTap,
+  ) async {
     if (Platform.isLinux || Platform.isWindows) return;
 
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -92,14 +96,17 @@ class PushServiceImpl implements IPushService {
     );
 
     await _localNotifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
 
     await _localNotifications.initialize(
-      const InitializationSettings(android: android, iOS: ios),
+      settings: const InitializationSettings(android: android, iOS: ios),
       onDidReceiveNotificationResponse: (response) async {
-        if (response.payload != null && response.payload!.isNotEmpty) {
-          await onTap(response.payload!);
+        final payload = response.payload;
+        if (payload != null && payload.isNotEmpty) {
+          await onTap(payload);
         }
       },
     );
@@ -109,7 +116,7 @@ class PushServiceImpl implements IPushService {
     if (Platform.isLinux || Platform.isWindows) return;
 
     FirebaseMessaging.onMessage.listen((message) async {
-      final route = _routeFromMessage(message.data);
+      final route = routeFromMessage(message.data);
 
       const androidDetails = AndroidNotificationDetails(
         'pengumuman_channel',
@@ -120,8 +127,11 @@ class PushServiceImpl implements IPushService {
       );
 
       await _localNotifications.show(
-        message.hashCode,
-        title: message.notification?.title ?? message.data['title'] ?? 'Pengumuman',
+        id: message.hashCode,
+        title:
+            message.notification?.title ??
+            message.data['title'] ??
+            'Pengumuman',
         body: message.notification?.body ?? message.data['body'] ?? '',
         notificationDetails: const NotificationDetails(android: androidDetails),
         payload: route,
@@ -129,23 +139,27 @@ class PushServiceImpl implements IPushService {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      final route = _routeFromMessage(message.data);
+      final route = routeFromMessage(message.data);
       onMessage(route);
     });
   }
 
-  Future<void> _handleTerminated(Future<void> Function(String route) onMessage) async {
+  Future<void> _handleTerminated(
+    Future<void> Function(String route) onMessage,
+  ) async {
     if (Platform.isLinux || Platform.isWindows) return;
 
     final initial = await FirebaseMessaging.instance.getInitialMessage();
     if (initial != null) {
-      final route = _routeFromMessage(initial.data);
+      final route = routeFromMessage(initial.data);
       // Small delay to ensure router is ready
       Future.delayed(const Duration(milliseconds: 500), () => onMessage(route));
     }
   }
 
-  Future<void> _setupTokenListener(Future<void> Function(String token) onToken) async {
+  Future<void> _setupTokenListener(
+    Future<void> Function(String token) onToken,
+  ) async {
     if (Platform.isLinux || Platform.isWindows) {
       await onToken('fcm-not-supported-on-desktop');
       return;
@@ -177,15 +191,23 @@ class PushServiceImpl implements IPushService {
   }
 
   @override
-  Future<({bool success, Failure? failure})> postDeviceToken(String token) async {
+  Future<({bool success, Failure? failure})> postDeviceToken(
+    String token,
+  ) async {
     if (_authRepository == null) {
-      return (success: false, failure: const LocalFailure('AuthRepository tidak tersedia'));
+      return (
+        success: false,
+        failure: const LocalFailure('AuthRepository tidak tersedia'),
+      );
     }
     try {
-      await _authRepository!.postDeviceToken(token);
+      await _authRepository.postDeviceToken(token);
       return (success: true, failure: null);
     } catch (e) {
-      return (success: false, failure: LocalFailure('Gagal kirim FCM token: $e'));
+      return (
+        success: false,
+        failure: LocalFailure('Gagal kirim FCM token: $e'),
+      );
     }
   }
 
@@ -201,7 +223,9 @@ class PushServiceImpl implements IPushService {
   Future<void> unsubscribeFromCampusTopic() async {
     if (Platform.isLinux || Platform.isWindows) return;
     try {
-      await FirebaseMessaging.instance.unsubscribeFromTopic('pengumuman-kampus');
+      await FirebaseMessaging.instance.unsubscribeFromTopic(
+        'pengumuman-kampus',
+      );
     } catch (_) {}
   }
 }

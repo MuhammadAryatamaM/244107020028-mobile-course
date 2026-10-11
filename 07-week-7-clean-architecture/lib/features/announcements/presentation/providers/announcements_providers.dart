@@ -1,11 +1,10 @@
 /// Announcements feature presentation providers — wiring DI + state (FutureProvider).
 /// Simple CRUD: repository → FutureProvider directly (no use case needed).
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../../auth/presentation/providers/auth_providers.dart'; // for apiClientProvider
-import '../../../data/repositories/announcement_repository_impl.dart';
-import '../../../domain/repositories/i_announcement_repository.dart';
-import '../../../domain/entities/announcement.dart';
+import 'package:campus_notify/features/auth/presentation/providers/auth_providers.dart';
+import 'package:campus_notify/features/announcements/data/repositories/announcement_repository_impl.dart';
+import 'package:campus_notify/features/announcements/domain/repositories/i_announcement_repository.dart';
+import 'package:campus_notify/features/announcements/domain/entities/announcement.dart';
 
 // ==========================================
 // DATA LAYER PROVIDER

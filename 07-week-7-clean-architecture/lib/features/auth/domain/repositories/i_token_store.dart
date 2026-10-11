@@ -1,6 +1,6 @@
 /// Secure token storage contract — pure domain interface.
 /// Implementation wraps [FlutterSecureStorage] in data layer.
-import '../../../core/failures.dart';
+import 'package:campus_notify/core/failures.dart';
 
 abstract class ITokenStore {
   /// Save both access and refresh tokens.

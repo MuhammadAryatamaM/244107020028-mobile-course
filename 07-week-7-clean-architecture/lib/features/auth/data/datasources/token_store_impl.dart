@@ -1,9 +1,8 @@
 /// Secure token storage implementation using FlutterSecureStorage.
 /// Implements [ITokenStore] domain interface.
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-import '../../../../core/failures.dart';
-import '../../../domain/repositories/i_token_store.dart';
+import 'package:campus_notify/core/failures.dart';
+import 'package:campus_notify/features/auth/domain/repositories/i_token_store.dart';
 
 class TokenStoreImpl implements ITokenStore {
   TokenStoreImpl({FlutterSecureStorage? storage})
@@ -51,5 +50,11 @@ class TokenStoreImpl implements ITokenStore {
     } catch (e) {
       throw LocalFailure('Gagal menghapus token: $e');
     }
+  }
+
+  @override
+  Future<bool> hasToken() async {
+    final access = await readAccessToken();
+    return access != null;
   }
 }

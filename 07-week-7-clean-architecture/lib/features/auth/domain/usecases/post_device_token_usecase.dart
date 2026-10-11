@@ -2,8 +2,8 @@
 /// Called from [LoginUseCase] and [PushService] (on token refresh).
 ///
 /// Idempotent: safe to call multiple times with same token.
-import '../../repositories/i_auth_repository.dart';
-import '../../../../core/failures.dart';
+import 'package:campus_notify/core/failures.dart';
+import 'package:campus_notify/features/auth/domain/repositories/i_auth_repository.dart';
 
 class PostDeviceTokenUseCase {
   const PostDeviceTokenUseCase(this._authRepository);

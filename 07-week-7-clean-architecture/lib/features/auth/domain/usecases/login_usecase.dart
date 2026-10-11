@@ -2,11 +2,11 @@
 /// Orchestrates: [IAuthRepository.login] → [ITokenStore.save] → [IPushService.postDeviceToken]
 ///
 /// Returns [AuthSession] on success, [Failure] on any step failure.
-import '../../entities/auth_session.dart';
-import '../../repositories/i_auth_repository.dart';
-import '../../repositories/i_token_store.dart';
-import '../../../../notifications/domain/services/i_push_service.dart';
-import '../../../../core/failures.dart';
+import 'package:campus_notify/core/failures.dart';
+import 'package:campus_notify/features/auth/domain/entities/auth_session.dart';
+import 'package:campus_notify/features/auth/domain/repositories/i_auth_repository.dart';
+import 'package:campus_notify/features/auth/domain/repositories/i_token_store.dart';
+import 'package:campus_notify/features/notifications/domain/services/i_push_service.dart';
 
 class LoginUseCase {
   const LoginUseCase({

@@ -2,17 +2,15 @@
 /// Single source of truth for all auth-related Riverpod providers.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
-
-import '../../../../core/failures.dart';
-import '../../../data/datasources/api_client.dart';
-import '../../../data/datasources/token_store_impl.dart';
-import '../../../data/repositories/auth_repository_impl.dart';
-import '../../../domain/repositories/i_auth_repository.dart';
-import '../../../domain/repositories/i_token_store.dart';
-import '../../../domain/usecases/login_usecase.dart';
-import '../../../domain/usecases/refresh_token_usecase.dart';
-import '../../../domain/usecases/post_device_token_usecase.dart';
-import '../../../../notifications/domain/services/i_push_service.dart';
+import 'package:campus_notify/features/auth/data/datasources/api_client.dart';
+import 'package:campus_notify/features/auth/data/datasources/token_store_impl.dart';
+import 'package:campus_notify/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:campus_notify/features/auth/domain/repositories/i_auth_repository.dart';
+import 'package:campus_notify/features/auth/domain/repositories/i_token_store.dart';
+import 'package:campus_notify/features/auth/domain/usecases/login_usecase.dart';
+import 'package:campus_notify/features/auth/domain/usecases/refresh_token_usecase.dart';
+import 'package:campus_notify/features/auth/domain/usecases/post_device_token_usecase.dart';
+import 'package:campus_notify/features/notifications/presentation/providers/push_providers.dart';
 
 // ==========================================
 // DATA LAYER PROVIDERS

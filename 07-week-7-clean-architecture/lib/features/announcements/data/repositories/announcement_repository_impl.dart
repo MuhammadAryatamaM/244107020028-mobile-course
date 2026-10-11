@@ -1,10 +1,9 @@
 /// Announcement repository implementation.
 /// Implements [IAnnouncementRepository] using Dio for HTTP.
 import 'package:dio/dio.dart';
-
-import '../../../../core/failures.dart';
-import '../../../domain/entities/announcement.dart';
-import '../../../domain/repositories/i_announcement_repository.dart';
+import 'package:campus_notify/core/failures.dart';
+import 'package:campus_notify/features/announcements/domain/entities/announcement.dart';
+import 'package:campus_notify/features/announcements/domain/repositories/i_announcement_repository.dart';
 import '../models/announcement_dto.dart';
 
 class AnnouncementRepositoryImpl implements IAnnouncementRepository {

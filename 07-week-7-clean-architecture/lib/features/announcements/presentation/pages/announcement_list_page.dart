@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../providers/announcements_providers.dart';
-import '../../../../routes.dart';
+import 'package:campus_notify/features/announcements/presentation/providers/announcements_providers.dart';
+import 'package:campus_notify/features/auth/presentation/providers/auth_providers.dart';
+import 'package:campus_notify/features/notifications/presentation/providers/push_providers.dart';
+import 'package:campus_notify/routes.dart';
 
 class AnnouncementListPage extends ConsumerStatefulWidget {
   const AnnouncementListPage({super.key});
@@ -15,8 +17,6 @@ class AnnouncementListPage extends ConsumerStatefulWidget {
 }
 
 class _AnnouncementListPageState extends ConsumerState<AnnouncementListPage> {
-  String _fcmToken = 'Memuat token...';
-
   @override
   void initState() {
     super.initState();
@@ -26,12 +26,7 @@ class _AnnouncementListPageState extends ConsumerState<AnnouncementListPage> {
   Future<void> _setupFcm() async {
     // Get FCM token from notifications feature
     final token = await ref.read(fcmTokenProvider.future);
-    if (mounted) {
-      setState(() {
-        _fcmToken = token ?? 'Tidak tersedia';
-      });
-    }
-
+    
     // Post token to backend if available (non-blocking)
     if (token != null && token != 'fcm-not-supported-on-desktop') {
       try {
@@ -47,13 +42,6 @@ class _AnnouncementListPageState extends ConsumerState<AnnouncementListPage> {
         }
       }
     }
-  }
-
-  String _formatToken(String token) {
-    if (token.length > 12) {
-      return '${token.substring(0, 12)}...';
-    }
-    return token;
   }
 
   String _formatDate(DateTime dt) {

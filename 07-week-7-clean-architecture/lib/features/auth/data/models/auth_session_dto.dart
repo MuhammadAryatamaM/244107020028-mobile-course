@@ -1,6 +1,6 @@
 /// Data transfer object for AuthSession — extends domain entity with JSON mapping.
 /// Only place where JSON parsing/serialization lives.
-import '../../../../auth/domain/entities/auth_session.dart';
+import 'package:campus_notify/features/auth/domain/entities/auth_session.dart';
 
 class AuthSessionDto extends AuthSession {
   const AuthSessionDto({

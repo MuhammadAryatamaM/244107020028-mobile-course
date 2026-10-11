@@ -2,7 +2,7 @@
 /// Implementation wraps Firebase Messaging in data layer.
 ///
 /// Used by [LoginUseCase] to send FCM token to backend after login.
-import '../../../../core/failures.dart';
+import 'package:campus_notify/core/failures.dart';
 
 abstract class IPushService {
   /// Initialize FCM: request permission, get token, set up listeners.

@@ -2,8 +2,8 @@
 /// Moved from lib/data/api_client.dart → features/auth/data/datasources/
 import 'package:dio/dio.dart';
 
-import '../repositories/auth_repository_impl.dart';
-import '../../domain/repositories/i_token_store.dart';
+import 'package:campus_notify/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:campus_notify/features/auth/domain/repositories/i_token_store.dart';
 
 /// Build configured Dio instance.
 /// [tokenStore] for reading access token.

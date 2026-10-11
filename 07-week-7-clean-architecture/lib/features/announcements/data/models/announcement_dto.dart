@@ -1,6 +1,6 @@
 /// Data transfer object for Announcement — extends domain entity with JSON mapping.
 /// Only place where JSON parsing/serialization lives.
-import '../../../domain/entities/announcement.dart';
+import 'package:campus_notify/features/announcements/domain/entities/announcement.dart';
 
 class AnnouncementDto extends Announcement {
   const AnnouncementDto({

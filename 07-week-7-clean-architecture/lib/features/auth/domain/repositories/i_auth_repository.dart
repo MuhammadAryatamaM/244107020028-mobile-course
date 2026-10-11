@@ -3,8 +3,8 @@
 ///
 /// All methods return a record `({T data, Failure? failure})` to make
 /// success/failure explicit without throwing exceptions across layers.
-import '../../entities/auth_session.dart';
-import '../../../core/failures.dart';
+import 'package:campus_notify/features/auth/domain/entities/auth_session.dart';
+import 'package:campus_notify/core/failures.dart';
 
 abstract class IAuthRepository {
   /// Authenticate user with email & password.

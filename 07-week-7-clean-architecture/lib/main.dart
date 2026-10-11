@@ -4,19 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'firebase_options.dart';
-import 'messaging/push_service.dart';
-import 'pages/announcement_page.dart';
-import 'pages/home_page.dart';
-import 'pages/login_page.dart';
-import 'providers/auth_provider.dart';
 import 'routes.dart';
+import 'features/auth/presentation/providers/auth_providers.dart';
+import 'features/auth/presentation/pages/login_page.dart';
+import 'features/announcements/presentation/pages/announcement_list_page.dart';
+import 'features/announcements/presentation/pages/announcement_detail_page.dart';
+import 'features/notifications/presentation/providers/push_providers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  registerBackgroundHandler();
-  await requestNotificationPermission();
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -42,12 +39,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.home,
-        builder: (context, state) => const HomePage(),
+        builder: (context, state) => const AnnouncementListPage(),
       ),
       GoRoute(
         path: AppRoutes.announcementDetailPath,
         builder: (context, state) =>
-            AnnouncementPage(id: state.pathParameters['id'] ?? ''),
+            AnnouncementDetailPage(id: state.pathParameters['id'] ?? ''),
       ),
     ],
   );
@@ -65,7 +62,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      void navigateFromNotif(String route) {
+      Future<void> navigateFromNotif(String route) async {
         if (route == AppRoutes.home || route.isEmpty) return;
 
         Future.delayed(const Duration(milliseconds: 200), () {
@@ -75,9 +72,19 @@ class _MyAppState extends ConsumerState<MyApp> {
         });
       }
 
-      await initLocalNotifications(navigateFromNotif);
-      listenForeground(navigateFromNotif);
-      handleTerminated(navigateFromNotif);
+      // Initialize push notifications via IPushService (not concrete class)
+      final pushService = ref.read(pushServiceProvider);
+      await pushService.initialize(
+        onToken: (token) async {
+          // Post FCM token to backend via use case
+          try {
+            await ref.read(postDeviceTokenUseCaseProvider)(token);
+          } catch (_) {
+            // Silent fail - token will be retried on next login
+          }
+        },
+        onMessage: navigateFromNotif,
+      );
     });
   }
 
@@ -87,7 +94,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Dashboard App',
+      title: 'Campus Notify',
       theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
       routerConfig: router,
     );

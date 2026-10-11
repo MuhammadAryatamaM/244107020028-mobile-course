@@ -4,24 +4,27 @@ import 'package:campus_notify/core/failures.dart';
 
 abstract class ITokenStore {
   /// Save both access and refresh tokens.
-  /// Throws [LocalFailure] on storage error (handled by caller).
-  Future<void> save({
+  /// Returns [Failure] on storage error.
+  Future<Failure?> save({
     required String accessToken,
     required String refreshToken,
   });
 
   /// Read access token. Returns null if not found.
-  Future<String?> readAccessToken();
+  /// Returns [Failure] on storage error.
+  Future<({String? token, Failure? failure})> readAccessToken();
 
   /// Read refresh token. Returns null if not found.
-  Future<String?> readRefreshToken();
+  /// Returns [Failure] on storage error.
+  Future<({String? token, Failure? failure})> readRefreshToken();
 
   /// Clear all stored tokens (logout).
-  Future<void> clear();
+  /// Returns [Failure] on storage error.
+  Future<Failure?> clear();
 
   /// Check if any token exists (for quick auth state check).
-  Future<bool> hasToken() async {
-    final access = await readAccessToken();
-    return access != null;
+  Future<({bool hasToken, Failure? failure})> hasToken() async {
+    final result = await readAccessToken();
+    return (hasToken: result.token != null, failure: result.failure);
   }
 }

@@ -18,7 +18,11 @@ class RefreshTokenUseCase {
 
   Future<({String? accessToken, Failure? failure})> call() async {
     // 1. Read refresh token from secure storage
-    final refreshToken = await _tokenStore.readRefreshToken();
+    final readResult = await _tokenStore.readRefreshToken();
+    if (readResult.failure != null) {
+      return (accessToken: null, failure: readResult.failure);
+    }
+    final refreshToken = readResult.token;
     if (refreshToken == null || refreshToken.isEmpty) {
       return (
         accessToken: null,
@@ -38,16 +42,12 @@ class RefreshTokenUseCase {
     final newAccessToken = refreshResult.accessToken!;
 
     // 3. Save new access token (keep same refresh token)
-    try {
-      await _tokenStore.save(
-        accessToken: newAccessToken,
-        refreshToken: refreshToken,
-      );
-    } catch (e) {
-      return (
-        accessToken: null,
-        failure: LocalFailure('Gagal menyimpan token baru: $e'),
-      );
+    final saveResult = await _tokenStore.save(
+      accessToken: newAccessToken,
+      refreshToken: refreshToken,
+    );
+    if (saveResult != null) {
+      return (accessToken: null, failure: saveResult);
     }
 
     return (accessToken: newAccessToken, failure: null);

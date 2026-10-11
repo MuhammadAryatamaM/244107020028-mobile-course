@@ -133,7 +133,11 @@ class AuthRepositoryImpl implements IAuthRepository {
   }
 
   @override
-  Future<void> logout() async {
-    await _tokenStore.clear();
+  Future<({bool success, Failure? failure})> logout() async {
+    final result = await _tokenStore.clear();
+    if (result != null) {
+      return (success: false, failure: result);
+    }
+    return (success: true, failure: null);
   }
 }

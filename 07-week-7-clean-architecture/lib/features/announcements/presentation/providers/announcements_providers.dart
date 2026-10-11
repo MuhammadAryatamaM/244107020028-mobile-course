@@ -1,6 +1,7 @@
 /// Announcements feature presentation providers — wiring DI + state (FutureProvider).
 /// Simple CRUD: repository → FutureProvider directly (no use case needed).
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:campus_notify/core/exceptions.dart';
 import 'package:campus_notify/features/auth/presentation/providers/auth_providers.dart';
 import 'package:campus_notify/features/announcements/data/repositories/announcement_repository_impl.dart';
 import 'package:campus_notify/features/announcements/domain/repositories/i_announcement_repository.dart';
@@ -26,7 +27,7 @@ final announcementsProvider = FutureProvider<List<Announcement>>((ref) async {
   final repo = ref.watch(announcementRepositoryProvider);
   final result = await repo.fetchAnnouncements();
   if (result.failure != null) {
-    throw Exception(result.failure!.message);
+    throw failureToException(result.failure!);
   }
   return result.announcements;
 });
@@ -37,7 +38,7 @@ final announcementDetailProvider = FutureProvider.autoDispose.family<Announcemen
   final repo = ref.watch(announcementRepositoryProvider);
   final result = await repo.fetchAnnouncementDetail(id);
   if (result.failure != null) {
-    throw Exception(result.failure!.message);
+    throw failureToException(result.failure!);
   }
   return result.announcement!;
 });

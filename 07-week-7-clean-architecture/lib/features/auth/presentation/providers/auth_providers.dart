@@ -82,8 +82,12 @@ class AuthNotifier extends AsyncNotifier<bool> {
   @override
   Future<bool> build() async {
     // Check if access token exists on app start
-    final hasToken = await ref.watch(tokenStoreProvider).hasToken();
-    return hasToken;
+    final hasTokenResult = await ref.watch(tokenStoreProvider).hasToken();
+    if (hasTokenResult.failure != null) {
+      // If there's an error reading token, treat as not logged in
+      return false;
+    }
+    return hasTokenResult.hasToken;
   }
 
   /// Login with email & password.
@@ -104,7 +108,11 @@ class AuthNotifier extends AsyncNotifier<bool> {
 
   /// Logout — clear tokens and invalidate state.
   Future<void> logout() async {
-    await ref.watch(tokenStoreProvider).clear();
+    final clearResult = await ref.watch(tokenStoreProvider).clear();
+    if (clearResult != null) {
+      // Log error but continue with logout
+      // In production, you might want to handle this differently
+    }
     ref.invalidateSelf(); // Triggers rebuild of authStateProvider
   }
 }

@@ -21,27 +21,37 @@ Dio buildApiClient({
 
   dio.interceptors.add(InterceptorsWrapper(
     onRequest: (options, handler) async {
-      final access = await tokenStore.readAccessToken();
-      if (access != null) {
-        options.headers['Authorization'] = 'Bearer $access';
+      final accessResult = await tokenStore.readAccessToken();
+      if (accessResult.failure != null) {
+        // Log failure but continue without token
+        // In production, you might want to handle this differently
+      } else if (accessResult.token != null) {
+        options.headers['Authorization'] = 'Bearer ${accessResult.token}';
       }
       handler.next(options);
     },
     onError: (e, handler) async {
       if (e.response?.statusCode == 401) {
-        final refresh = await tokenStore.readRefreshToken();
-        if (refresh == null) return handler.next(e);
+        final readResult = await tokenStore.readRefreshToken();
+        if (readResult.failure != null || readResult.token == null) {
+          return handler.next(e);
+        }
 
         try {
           // Use dedicated repo (no interceptor) to refresh
-          final refreshResult = await refreshAuthRepo.refreshToken(refresh);
+          final refreshResult = await refreshAuthRepo.refreshToken(readResult.token!);
           if (refreshResult.failure != null) {
             await tokenStore.clear();
             return handler.next(e);
           }
 
           final newAccess = refreshResult.accessToken!;
-          await tokenStore.save(accessToken: newAccess, refreshToken: refresh);
+          final saveResult = await tokenStore.save(accessToken: newAccess, refreshToken: readResult.token!);
+          if (saveResult != null) {
+            // Save failed, clear and continue
+            await tokenStore.clear();
+            return handler.next(e);
+          }
 
           // Retry original request with new token
           final retry = await dio.fetch(

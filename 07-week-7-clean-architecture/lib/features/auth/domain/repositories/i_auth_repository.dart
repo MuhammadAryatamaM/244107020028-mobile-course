@@ -25,5 +25,5 @@ abstract class IAuthRepository {
 
   /// Logout — clear local tokens (delegates to [ITokenStore]).
   /// Typically handled by use case / notifier, not directly here.
-  Future<void> logout();
+  Future<({bool success, Failure? failure})> logout();
 }

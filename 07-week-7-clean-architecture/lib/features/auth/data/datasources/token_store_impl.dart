@@ -13,48 +13,52 @@ class TokenStoreImpl implements ITokenStore {
   static const _refreshKey = 'refresh_token';
 
   @override
-  Future<void> save({
+  Future<Failure?> save({
     required String accessToken,
     required String refreshToken,
   }) async {
     try {
       await _storage.write(key: _accessKey, value: accessToken);
       await _storage.write(key: _refreshKey, value: refreshToken);
+      return null;
     } catch (e) {
-      throw LocalFailure('Gagal menyimpan token ke secure storage: $e');
+      return LocalFailure('Gagal menyimpan token ke secure storage: $e');
     }
   }
 
   @override
-  Future<String?> readAccessToken() async {
+  Future<({String? token, Failure? failure})> readAccessToken() async {
     try {
-      return await _storage.read(key: _accessKey);
+      final token = await _storage.read(key: _accessKey);
+      return (token: token, failure: null);
     } catch (e) {
-      throw LocalFailure('Gagal membaca access token: $e');
+      return (token: null, failure: LocalFailure('Gagal membaca access token: $e'));
     }
   }
 
   @override
-  Future<String?> readRefreshToken() async {
+  Future<({String? token, Failure? failure})> readRefreshToken() async {
     try {
-      return await _storage.read(key: _refreshKey);
+      final token = await _storage.read(key: _refreshKey);
+      return (token: token, failure: null);
     } catch (e) {
-      throw LocalFailure('Gagal membaca refresh token: $e');
+      return (token: null, failure: LocalFailure('Gagal membaca refresh token: $e'));
     }
   }
 
   @override
-  Future<void> clear() async {
+  Future<Failure?> clear() async {
     try {
       await _storage.deleteAll();
+      return null;
     } catch (e) {
-      throw LocalFailure('Gagal menghapus token: $e');
+      return LocalFailure('Gagal menghapus token: $e');
     }
   }
 
   @override
-  Future<bool> hasToken() async {
-    final access = await readAccessToken();
-    return access != null;
+  Future<({bool hasToken, Failure? failure})> hasToken() async {
+    final result = await readAccessToken();
+    return (hasToken: result.token != null, failure: result.failure);
   }
 }

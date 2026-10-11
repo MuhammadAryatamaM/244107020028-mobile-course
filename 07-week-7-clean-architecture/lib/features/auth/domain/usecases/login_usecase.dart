@@ -38,16 +38,12 @@ class LoginUseCase {
     final session = loginResult.session!;
 
     // 2. Save tokens locally
-    try {
-      await _tokenStore.save(
-        accessToken: session.accessToken,
-        refreshToken: session.refreshToken,
-      );
-    } catch (e) {
-      return (
-        session: null,
-        failure: LocalFailure('Gagal menyimpan token: $e'),
-      );
+    final saveResult = await _tokenStore.save(
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
+    );
+    if (saveResult != null) {
+      return (session: null, failure: saveResult);
     }
 
     // 3. Post FCM token to backend (non-blocking: log error but don't fail login)

@@ -128,6 +128,24 @@ Use case per CRUD satu baris menambah boilerplate ~3 file per operasi, memperlam
 
 Tidak ada yang ditolak, hanya memperbaiki setelahnya (seperti kesalahan format import) karena secara logika masih bekerja
 
+# Week 8: Mid Project Review & Code Review
+
+## Apa beda LGTM buta dengan approve yang bertanggung jawab? Apa risikonya bagi tim?
+
+LGTM buta menilai dari permukaan (compile, CI hijau, diff dibaca sekilas), sedangkan approve yang bertanggung jawab menyatakan properti yang benar-benar diverifikasi beserta residual risk yang belum diuji. Risikonya bagi tim: "approve" kehilangan nilai informasi sehingga bug senyap bergeser ke produksi, biaya perbaikan membengkak, kepemilikan jadi kabur, dan utang test menumpuk tanpa disadari.
+
+## Kapan komentar wajib berstatus request changes, dan kapan cukup saran?
+
+Request changes wajib saat defect-nya senyap/permanen/makin mahal diperbaiki nanti — data & auth, kontrak yang berbohong, invariant arsitektur yang mengikat, klaim tanpa bukti, atau perilaku kritis yang berubah tanpa test regresi. Cukup saran untuk hal yang murah dan aman diubah belakangan: style, penamaan, penempatan file, alternatif desain yang sama valid, serta masalah pra-ada di luar perubahan PR ini.
+
+## Bagian mana dari review AI yang Anda tolak atau sederhanakan, dan mengapa?
+
+Tidak ada
+
+## Satu hal konkret yang Anda perbaiki setelah review sejawat — apa dampaknya?
+
+Mengubah review dari opini menjadi bukti, ada artefak yang bisa diverifikasi (diff + test repro)
+
 # Week 9: AI-assisted Development / Vibe Coding
 
 # Week 10: AI Feature Integration

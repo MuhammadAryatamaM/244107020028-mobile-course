@@ -148,6 +148,22 @@ Mengubah review dari opini menjadi bukti, ada artefak yang bisa diverifikasi (di
 
 # Week 9: AI-assisted Development / Vibe Coding
 
+## Satu halusinasi AI apa yang Anda temukan dan bagaimana membuktikannya?
+
+AI berasumsi bahwa `StateProvider` masih didukung dan tersedia di dependensi project (`flutter_riverpod: ^3.4.3`), padahal tidak. Saat `flutter test`, error `build: lib/domain/search_notes_use_case.dart: Error: Method not found: 'StateProvider'`.
+
+## Prompt mana yang paling membantu dan apa yang Anda ubah?
+
+`"Review kode search Flutter ini sebagai senior dev. Konteks: feature-first (presentation->domain<-data), Riverpod, SQLite + Dio. Fokus: kebenaran, arsitektur, test. Abaikan style. Beri 3 temuan + level blocker/saran + alasan."`. Diubah Keamanan SQL, debounce saat Search, dan buat test NotesPage langsung daripada widget palsu
+
+## Satu refactor apa yang Anda lakukan pada kode AI?
+
+Memecah UI menjadi `NotesAppBar`, `NotesSearchBar`, dan `NotesEmptyState`, tiap widget fokus pada satu tanggung jawab
+
+## Keputusan terima/tolak mana yang paling sulit?
+
+Menolak saran AI untuk mem-mock konfigurasi global go_router pada widget test karena menjalankan `MaterialApp.router(routerConfig: goRouter)`  tampak lebih "realistis" dan end-to-end karena menggunakan router bawaan app. 
+
 # Week 10: AI Feature Integration
 
 # Week 11: Performance Optimization

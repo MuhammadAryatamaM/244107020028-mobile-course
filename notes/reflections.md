@@ -162,9 +162,30 @@ Memecah UI menjadi `NotesAppBar`, `NotesSearchBar`, dan `NotesEmptyState`, tiap 
 
 ## Keputusan terima/tolak mana yang paling sulit?
 
-Menolak saran AI untuk mem-mock konfigurasi global go_router pada widget test karena menjalankan `MaterialApp.router(routerConfig: goRouter)`  tampak lebih "realistis" dan end-to-end karena menggunakan router bawaan app. 
+Menolak saran AI untuk mem-mock konfigurasi global go_router pada widget test karena menjalankan `MaterialApp.router(routerConfig: goRouter)` tampak lebih "realistis" dan end-to-end karena menggunakan router bawaan app
 
 # Week 10: AI Feature Integration
+
+## Fitur AI mana yang Anda integrasikan dan mengapa?
+
+AI Note Summarizer menggunakan Google Gemini API karena relevan dengan offline notes. Pengguna dengan banyak catatan panjang dapat ringkasan dalam beberapa detik tanpa mengubah catatan aslinya
+
+## Bagaimana Anda melindungi privasi pengguna saat menggunakan AI API?
+
+- API Key tidak di-hardcode ke dalam kode, tapi diatur melalui setting dan disimpan di `flutter_secure_storage`
+- Tidak ada data pribadi atau metadata pengguna yang dikirim ke AI
+- Hanya teks catatan yang secara eksplisit ditekan tombol "Ringkas" oleh user yang dikirim ke API
+
+## Fallback apa yang Anda sediakan jika layanan AI error?
+
+- Jika catatan kosong, validasi lokal  memberi tahu user tanpa membuang kuota
+- Jika API key belum diisi, user diarahkan ke dialog pengaturan API key
+- Jika terjadi error jaringan, limit kuota, atau server AI down, exception ditangani dengan menampilkan pesan peringatan tanpa membuat aplikasi freeze
+- Aplikasi tetap berfungsi secara lokal sesuai prinsip offline-first
+
+## Satu hal yang Anda pelajari tentang UX fitur AI di mobile?
+
+Fitur AI di  mobile perlu penanganan feedback visual yang jelas (status loading terpisah, disabling tombol saat proses berjalan untuk mencegah multi-request, kontainer output mudah dibedakan dari isi catatan asli). Fitur AI harus bersifat opsional dan tidak boleh memblokir interaksi inti aplikasi saat offline
 
 # Week 11: Performance Optimization
 

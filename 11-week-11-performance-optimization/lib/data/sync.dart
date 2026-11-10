@@ -82,12 +82,32 @@ class PostsSyncService {
     return cached;
   }
 
-  static final Dio _dioClient = Dio(
-    BaseOptions(
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-    ),
-  );
+  static final Dio _dioClient =
+      Dio(
+          BaseOptions(
+            connectTimeout: const Duration(seconds: 10),
+            receiveTimeout: const Duration(seconds: 10),
+          ),
+        )
+        ..interceptors.add(
+          InterceptorsWrapper(
+            onRequest: (options, handler) {
+              // Log network request untuk monitoring performa
+              return handler.next(options);
+            },
+            onError: (DioException e, handler) async {
+              // Retry sederhana 1x jika terjadi network timeout
+              if (e.type == DioExceptionType.connectionTimeout ||
+                  e.type == DioExceptionType.receiveTimeout) {
+                try {
+                  final response = await _dioClient.fetch(e.requestOptions);
+                  return handler.resolve(response);
+                } catch (_) {}
+              }
+              return handler.next(e);
+            },
+          ),
+        );
 
   Future<void> refreshPostsInBackground() async {
     final isOffline = ref.read(forceOfflineProvider);

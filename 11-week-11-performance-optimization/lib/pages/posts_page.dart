@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../data/network_provider.dart';
 import '../data/sync.dart';
 
+import '../widgets/post_tile.dart';
+
 class PostsPage extends ConsumerWidget {
   const PostsPage({super.key});
 
@@ -48,23 +50,7 @@ class PostsPage extends ConsumerWidget {
           return ListView.builder(
             itemCount: posts.length,
             itemBuilder: (context, index) {
-              final post = posts[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: ListTile(
-                  leading: CircleAvatar(child: Text('${post.id}')),
-                  title: Text(
-                    post.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: Text(
-                    post.body,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              );
+              return PostTile(post: posts[index]);
             },
           );
         },

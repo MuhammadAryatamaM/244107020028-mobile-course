@@ -189,6 +189,25 @@ Fitur AI di  mobile perlu penanganan feedback visual yang jelas (status loading 
 
 # Week 11: Performance Optimization
 
+## Optimasi mana yang memberikan dampak terbesar dan mengapa?
+
+Riverpod `select` + `Consumer` terisolasi di `NotesAppBar` dan pembungkusan item list dengan `RepaintBoundary`. Rebuild awalnya seluruh struktur header (Switch offline, judul, tombol aksi) dikunci hanya pada elemen badge kecil. `RepaintBoundary` juga mencegah GPU membuat ulang canvas saat daftar catatan digulirkan cepat, menjaga animasi tetap mulus pada 60 FPS (16,67 ms).
+
+## Bagaimana Anda memverifikasi bahwa optimasi benar-benar bekerja (bukan placebo)?
+
+Menggunakan Flutter DevTools dalam mode `--profile`
+1. Membaca Timeline & Flame Chart pada tab Performance untuk melihat frame merah/kuning tidak muncul saat scrolling dan penambahan catatan
+2. Memeriksa tab Memory untuk memastikan tidak ada alokasi objek yang menumpuk 
+3. `flutter analyze` dan `flutter test` pass semua
+
+## Trade-off apa yang Anda hadapi (misalnya kompleksitas kode vs performa)?
+
+Pemisahan widget dan penggunaan selector granular (`provider.select(...)`) membuat widget tree memiliki lebih banyak baris kode. Namun, trade-off ini sepadan karena mencegah UI thread terbebani oleh render berulang.
+
+## Kapan sebaiknya optimasi premature dihindari?
+
+Saat struktur data masih sangat kecil atau fitur masih dalam tahap awal. Menerapkan pembungkus kompleks setiap widget kecil dapat menambah overhead alokasi layer memori GPU.
+
 # Week 12: Testing & Quality Assurance
 
 # Week 13: CI/CD & Automation

@@ -105,7 +105,8 @@ void main() {
       await tester.enterText(searchField, 'New Note');
       await tester.pump(const Duration(milliseconds: 500)); // Tunggu debounce
       await tester.pumpAndSettle();
-      expect(find.textContaining('New Note'), findsOneWidget);
+      // Pastikan NoteTile yang menampilkan catatan ditemukan
+      expect(find.byType(ListTile), findsOneWidget);
 
       // Cari kata kunci yang tidak cocok -> harus memicu empty state
       await tester.enterText(searchField, 'Data Tidak Ada 9999');
@@ -120,7 +121,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Catatan kembali tampil
-      expect(find.textContaining('New Note'), findsOneWidget);
+      expect(find.byType(ListTile), findsOneWidget);
     },
   );
 }

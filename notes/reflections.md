@@ -210,6 +210,19 @@ Saat struktur data masih sangat kecil atau fitur masih dalam tahap awal. Menerap
 
 # Week 12: Testing & Quality Assurance
 
+## Bug apa yang paling mungkin terlewat tanpa pengujian yang Anda tulis?
+
+Bug pada edge cases dan deserialisasi data null, seperti saat `fromMap()` menerima map kosong atau field yang hilang. Tanpa pengujian unit, deserialisasi seperti ini rentan memicu `TypeError` atau crash saat runtime jika database SQLite mengembalikan baris yang tidak lengkap. Selain itu, bug interaksi pencarian—seperti query dengan spasi berlebih atau debounce yang gagal dibersihkan saat menekan tombol clear akan sangat mudah lolos tanpa widget test otomatis.
+
+## Bagian mana yang perlu fake, dan bagaimana fake itu membuat pengujian lebih konsisten?
+
+Bagian akses data atau persistensi database (`NoteRepositoryInterface`). Dengan membuat `FakeNoteRepository`, kita tidak bergantung pada SQLite sungguhan yang membutuhkan native FFI, sistem berkas, atau state database yang tertinggal dari pengujian sebelumnya. Fake repository membuat pengujian berjalan deterministik, cepat, dan memungkinkan simulasi skenario kegagalan koneksi yang sulit direproduksi di database nyata.
+
+## Apa perbedaan nilai yang diberikan pengujian widget dan pengujian integrasi pada fitur Anda?
+
+- Pengujian Widget (`test/widget/`): Memberikan verifikasi cepat dan terisolasi pada level komponen UI, memastikan elemen seperti `NotesAppBar`, `NotesSearchBar`, `NotesEmptyState`, dan reaksi input teks bekerja sesuai aturan desain tanpa perlu meluncurkan seluruh lifecycle aplikasi.
+- Pengujian Integrasi (`integration_test/`): Memberikan jaminan tingkat tinggi bahwa seluruh komponen yang berbeda (routing navigasi, state management Riverpod, repository, dan interaksi layar nyata) dapat berkolaborasi dengan benar dalam satu alur di lingkungan perangkat target. Widget test menjamin bahwa komponen dibuat dengan benar, sedangkan integration test menjamin bahwa seluruh sistem bekerja bersama dengan benar.
+
 # Week 13: CI/CD & Automation
 
 # Week 14: Deployment & Monitoring

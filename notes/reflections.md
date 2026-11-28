@@ -225,6 +225,24 @@ Bagian akses data atau persistensi database (`NoteRepositoryInterface`). Dengan 
 
 # Week 13: CI/CD & Automation
 
+## Masalah apa yang ditemukan otomatis sebelum perubahan di-merge?
+
+1. Inkonsistensi indentasi dan trailing comma yang langsung ditolak oleh perintah `dart format --set-exit-if-changed`.
+2. Penggunaan variabel yang tidak terpakai, deklarasi tipe yang tidak aman, atau aturan konvensi Dart yang terlewatkan (warning yang ditangkap sebagai kegagalan build oleh flag `--fatal-infos` pada `flutter analyze`).
+3. Kerusakan pada logika bisnis pencarian catatan atau rendering UI yang langsung memicu kegagalan build pada tahap `flutter test` sebelum perubahan sempat masuk ke branch utama.
+
+## Informasi apa yang Anda butuhkan untuk menyelidiki build yang gagal?
+
+1. Nama Step & Exit Code Pipeline (apakah gagal pada saat format, static analysis, unit test, atau build APK/AAB).
+2. Console Stack Trace (baris kode spesifik dan nama file yang memicu error).
+3. Pesan commit, commit hash (SHA), branch pengirim, serta versi Flutter SDK/Java JDK yang digunakan pada runner GitHub Actions.
+
+## Bagian mana yang masih perlu persetujuan atau pemeriksaan manual sebelum rilis?
+
+1. Keputusan akhir untuk merilis versi baru ke pengguna publik di Google Play Store atau App Store melalui review manual.
+2. Tampilan visual di berbagai ukuran layar fisik asli serta nuansa interaksi sentuhan nyata yang tidak dapat diuji sepenuhnya oleh pipeline otomatis.
+3. Penandatanganan aplikasi dengan kunci privat produksi dan pembaruan dokumen Release Notes / changelog untuk pengguna.
+
 # Week 14: Deployment & Monitoring
 
 # Week 15: Secure Mobile Development
